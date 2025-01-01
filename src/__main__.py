@@ -21,17 +21,18 @@ def fetch_lottery_results():
     else:
         raise Exception("Failed to fetch lottery results.")
 
-def check_results(results):
-    return any(number in results for number in WINNING_NUMBERS)
 
-def send_email_notification(results):
+def send_email_notification(result):
+    win_or_lose = "WINNER" if result in WINNING_NUMBERS else "Not today :("
     msg_content = f"""
-    Your number matched the Pick 4 Midday Results: {results}.
-
-    Your numbers: {WINNING_NUMBERS}
+    Today's Missouri Pick 4 Midday Results: {result}.
+    Your numbers: {str(WINNING_NUMBERS[0])} & {str(WINNING_NUMBERS[1])}
+    {"YOU WON!" if result in WINNING_NUMBERS else "Not today :("}
     """
+    title_content = f"Daily Lottery Result: {win_or_lose}"
+    
     msg = MIMEText(msg_content)
-    msg["Subject"] = f"Daily Lottery Result: {results}"
+    msg["Subject"] = title_content
     msg["From"] = EMAIL_ADDRESS
     msg["To"] = RECIPIENT_EMAIL
     
@@ -41,7 +42,7 @@ def send_email_notification(results):
         server.send_message(msg)
     print("Email notification sent!")
 
-# Main logic
+
 def main():
     try:
         results = fetch_lottery_results()
